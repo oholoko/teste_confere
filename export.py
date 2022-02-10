@@ -1,5 +1,13 @@
 import os
+from datetime import datetime
 import paramiko
+import json
+
+if not os.path.exists('downloads'):
+    os.makedirs('downloads')
+
+if not os.path.exists('result'):
+    os.makedirs('result')
 
 line_type = {
 	'0': 'Header',
@@ -10,35 +18,6 @@ line_type = {
 	'5': 'Ajustes',
 	'6': 'Antecipações',
 	'9': 'Trailer'
-}
-
-header = {
-	'regiter_type':{'id':0,'format':'num'},
-	'client_code':{'id':1,'format':'num'},
-	'hour':{'id':2,'format':'hour'},
-	'date':{'id':3,'format':'date'},
-	'version':{'id':4,'format':'string'},
-	'uniqueid':{'id':5,'format':'string'}
-}
-
-sales = {
-	'type':{'id':0,'format':'num'},
-	'sale_id':{'id':1,'format':'num'},
-	'cl_external_id':{'id':2,'format':'num'},
-	'cl_code':{'id':3,'format':'num'},
-	'stabilishment_id':{'id':4,'format':'num'},
-	'sale_date':{'id':5,'format':'date'},
-	'brute_value':{'id':6,'format':'money'},
-	'transaction_type':{'id':7,'format':'table1'},
-	'flag_code':{'id':8,'format':'table2'},
-	'aq_code':{'id':9,'format':'table3'},
-	'comp_num':{'id':10,'format':'string'},
-	'auth_code':{'id':11,'format':'num'},
-	'PDV':{'id':12,'format':'string'},
-	'parc_total':{'id':13,'format':'num'},
-	'desc':{'id':14,'format':'string'},
-	'hour':{'id':15,'format':'hour'},
-	'card_num':{'id':16,'format':'text'}
 }
 
 table1 = {'1':'Depósito em conta',
@@ -203,9 +182,39 @@ table3 = {'2':'Rede',
 
 
 def serialize_data(line):
+	line = line.strip('\n').split(';')
 	if line_type[line[0]] == 'Header':
-		return {'tipo'}
+		data = {
+			'regiter_type':line[0],
+			'client_code':line[1],
+			'hour':line[2],
+			'date':datetime.strptime(line[3],'%Y%M%d'),
+			'version':line[4],
+			'uniqueid':line[5]
+		}		
 	if line_type[line[0]] == 'Vendas':
+		data = {
+			'type':line[0],
+			'sale_id':line[1],
+			'cl_external_id':line[2],
+			'cl_code':line[3],
+			'stabilishment_id':line[4],
+			'sale_date':datetime.strptime(line[5],'%Y%M%d'),
+			'brute_value':line[6],
+			'transaction_type':table1[line[7]],
+			'flag_code':table2[line[8]],
+			'aq_code':table3[line[9]],
+			'comp_num':line[10],
+			'auth_code':line[11],
+			'PDV':line[12],
+			'parc_total':line[13],
+			'desc':line[14],
+			'hour':line[15],
+			'card_num':line[16]
+		}
+	if line_type[line[0]] == 'Trailer':
+		data = None
+	return data
 
 
 class confere_data:
@@ -254,8 +263,20 @@ class confere_data:
 		return 'File updated'
 
 	def __serializedata__(self):
-		for each in os.listdir('downloads/'):
-			with open('downloads/'+each) as file:
-				
+		self.data = []
+		for file in os.listdir('downloads/'):
+			with open('downloads/'+file) as lines:
+				for line in lines:
+					self.data.append(serialize_data(line))
+				self.data.pop()
 
-confere_data()
+	def to_file(self,name):
+		file = open('result/'+name,'w')
+		file.write(json.dumps(self.data, indent=4, sort_keys=True, default=str))
+
+	def to_stdout(self):
+		print(json.dumps(self.data, indent=4, sort_keys=True, default=str))
+
+a = confere_data()
+a.to_stdout()
+a.to_file('resultado.csv')
