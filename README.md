@@ -27,7 +27,7 @@ Terminei o projeto que esta contido em main.py
 pip3 install -r requirements.txt
 
 # Execução:
-python main.py
+python3 main.py
 
 # FLAGS: 
 # -h: Instruções sobre o codigo
@@ -35,6 +35,5 @@ python main.py
 # --onscreenlog: Escreve o log do codigo no terminal durante execução
 # --allfiles: Criar um arquivo por CSV
 # --output [FILENAME]: Escreve o json no arquivo com nome [FILENAME]
-
-
 ````
+O projeto gera um banco de dados chamado data.db que contem todas as informações de todos os csvs na pasta contida dentro do sftp.
