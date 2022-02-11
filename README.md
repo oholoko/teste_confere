@@ -17,3 +17,24 @@ Apos a leitura do CSV cada linha é processada individualmente para poder lidar 
 Um banco sera criado contendo os dados serializados e linkados. No CSV so encontrei os tipos:
 1,2,9 então não consigo estruturar um banco de dados completo para fazer as coneções de chave primaria e secundaria. Mas ja notei que a estrura que mostra um banco de dados relacional utilizando as multiplas chaves.
 Irei modelar ele amanhã e começar os proximos tipos.
+
+### Extras
+
+Terminei o projeto que esta contido em main.py
+````python
+# Instalação:
+
+pip3 install -r requirements.txt
+
+# Execução:
+python main.py
+
+# FLAGS: 
+# -h: Instruções sobre o codigo
+# --onscreenresult: Escreve o resultado no terminal apos execução
+# --onscreenlog: Escreve o log do codigo no terminal durante execução
+# --allfiles: Criar um arquivo por CSV
+# --output [FILENAME]: Escreve o json no arquivo com nome [FILENAME]
+
+
+````
